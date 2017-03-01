@@ -14,6 +14,19 @@
  *= require_self
  */
 
+.board {
+  margin: 50px auto 0;
+  width: 500px;
+}
+
+.board button {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 0;
+  background: #ccc;
+}
+
 button.red {
   background: #ff0000;
 }
