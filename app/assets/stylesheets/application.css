@@ -13,3 +13,11 @@
  *= require_tree .
  *= require_self
  */
+
+button.red {
+  background: #ff0000;
+}
+
+button.black {
+  background: #000;
+}

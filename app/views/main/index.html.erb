@@ -4,7 +4,11 @@
       <% 0.step(5) do |y| %>
         <tr>
         <% 0.step(6) do |x| %>
-          <td><button type="button"></button></td>
+          <% if x%2 == 0 %>
+            <td><button class="black" type="button"></button></td>
+          <% else %>
+             <td><button class="red" type="button"></button></td>
+          <% end %>
         <% end %>
         </tr>
       <% end %>
