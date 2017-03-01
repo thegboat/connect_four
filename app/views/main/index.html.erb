@@ -1,16 +1,12 @@
 <section class="board">
-  <div class="result">You Lose</div>
+  <div id="result">You Lose</div>
   <%= link_to "Start Game", controller: "main", action: "index" %>
   <table>
     <tbody>
-      <% 0.step(5) do |y| %>
+      <% 5.step(0,-1) do |y| %>
         <tr>
         <% 0.step(6) do |x| %>
-          <% if x%2 == 0 %>
-            <td><button class="black" type="button"></button></td>
-          <% else %>
-             <td><button class="red" type="button"></button></td>
-          <% end %>
+            <td><button type="button" name="<%= x.to_s + '_' + y.to_s %>"></button></td>
         <% end %>
         </tr>
       <% end %>
