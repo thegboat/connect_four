@@ -15,26 +15,43 @@
 //= require turbolinks
 //= require_tree .
 
-var board = {};
-for(var x=0;x<7;x++){
-  board[x] = {};
-}
 
-var waiting = false;
-var gameover = false;
+var waiting;
+var gameover;
+var board;
+
+function new_game(){
+  board = {};
+  for(var x=0;x<7;x++){
+    board[x] = {};
+  }
+
+  $('.board button').removeClass('red')
+  $('.board button').removeClass('black')
+
+  waiting = false;
+  gameover = false;
+  $("#result").html("")
+
+}
 
 function add_at(col,row, player){
   var selector = "[name='" + col + '_' + row + "']";
-  alert(selector)
   board[col][row] = player;
   $(selector).addClass(player);
 }
 
-function check_winner(col,row,player){
+function predict(col,row,player){
+  board[col][row] = player;
   var tie = true;
-  for(var x=0;x<7;x++){
+  //for optimization only
+  var xn = col-3 > 0 ? col-3 : 0
+  var xx = col+3 < 6 ? col+3 : 6
+  var yn = row-3 > 5 ? col-3 : 0
+  var yx = row+3 < 5 ? col+3 : 5
+  for(var x=xn;x<xx;x++){
     tie = tie && !!board[x][5];
-    for(var y=0;y<6;y++){
+    for(var y=yn;y<yx;y++){
       var diag1 = y>2&&x<4;
       var diag2 = y>2&&x>3;
       var vert = y<3;
@@ -44,56 +61,111 @@ function check_winner(col,row,player){
         diag2 = diag2 && board[x-d][y-d] == player;
         vert = vert && board[x][y+d] == player;
         horz = horz && board[x+d][y] == player;
+        if(diag2 && diag1 && vert && horz) break;
       }
-      if(diag2 || diag1 || vert || horz) return complete(player);
+      if(diag2 || diag1 || vert || horz){
+        board[col][row] = undefined;
+        return player;
+      }
     }
   }
 
-  if(tie) return complete();
-  return false;
+  board[col][row] = undefined;
+  if(tie) return 'tie';
+  return null;
 }
 
-function complete(player){
-  switch(player){
+function player_turn(col,row){
+  var result = predict(col,row,'red');
+  add_at(col,row,'red');
+  return end_message(result);
+}
+
+function end_message(winner){
+  switch(winner){
     case 'red' :
       $("#result").html("Red Player Wins")
+      break;
     case 'black' :
       $("#result").html("Black Player Wins")
-    default : 
+      break;
+    case 'tie' :
       $("#result").html("The Game Is A Tie")
+      break;
+    default : 
+      return false
   }
-  return true;
+  return true
 }
 
 function computer_turn(){
+  var block;
+  var move = [];
+  var col,row;
+  for(col=0;col<7;col++){
+    if(board[col][5]) continue;
+    row = get_lowest_row(col);
+    var result;
+    if(result = predict(col,row,'black')){
+      add_at(col,row,'black');
+      return end_message(result);
+    }else if(predict(col,row,'red')){
+      block=[col,row]
+    }else{
+      move.push([col,row])
+    }
+  }
+
+  if(block){
+    add_at(block[0],block[1],'black');
+    return false;
+  }else if(move.length){
+    var r = rand(move.length)
+    add_at(move[r][0],move[r][1],'black');
+    return false;
+  }else{
+    end_message('tie');
+    return true;
+  }
 
 }
 
+function rand(max) {
+  max = Math.floor(max);
+  return Math.floor(Math.random() * max);
+}
+
+function get_lowest_row(col){
+  var row=-1;
+  if(!board[col][5]){
+    for(row=0;row<6;row++){
+      if(!board[col][row]) break;
+    }
+  }
+  return row;
+}
+
 $(document).ready(function() {
+    new_game();
+    $('.board button').click(function(e) {
 
-
-
-    $('button').click(function(e) {
       if(waiting || gameover) return;
       waiting = true;
       var col = $(this).closest('tr').find('td').index($(this).closest('td'));
-      var row;
+      var row = get_lowest_row(col);
 
-      if(!board[col][5]){
-        for(row=0;row<6;row++){
-          if(!board[col][row]){
-            add_at(col,row,'red');
-            break;
-          }
-        }
-      }else{
+      if(row<0){
         waiting = false;
         return;
       }
 
-      gameover = check_winner(col,row,'red');
-      computer_turn();
-      gameover = check_winner(col,row,'black');
+      gameover = player_turn(col,row);
+      gameover = gameover || computer_turn();
       waiting = false;
     });
+
+    $('#new_game').click(function(e) {
+      new_game();
+    });
+
 });

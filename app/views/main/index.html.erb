@@ -1,7 +1,7 @@
-<section class="board">
-  <div id="result">You Lose</div>
-  <%= link_to "Start Game", controller: "main", action: "index" %>
-  <table>
+<section class="wrapper">
+  <div id="result"></div>
+  <button id="new_game" type="button">New Game</button>
+  <table class="board">
     <tbody>
       <% 5.step(0,-1) do |y| %>
         <tr>
