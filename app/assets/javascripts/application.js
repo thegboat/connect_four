@@ -48,8 +48,8 @@ function predict(col,row,player){
   //for optimization only; these limit range of checks
   var xn = col-3 > 0 ? col-3 : 0
   var xx = col+3 < 6 ? col+3 : 6
-  var yn = row-3 > 5 ? row-3 : 0
-  var yx = row+3 < 5 ? row+4 : 5
+  var yn = row-3 > 0 ? row-3 : 0
+  var yx = row+4 < 6 ? row+4 : 6
   for(var x=0;x<6;x++){
     tie = tie && !!board[x][5];
     if(x<xn || x>xx) continue;
