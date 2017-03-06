@@ -47,8 +47,8 @@ function predict(col,row,player){
   //for optimization only
   var xn = col-3 > 0 ? col-3 : 0
   var xx = col+3 < 6 ? col+3 : 6
-  var yn = row-3 > 5 ? col-3 : 0
-  var yx = row+3 < 5 ? col+3 : 5
+  var yn = row-3 > 5 ? row-3 : 0
+  var yx = row+3 < 5 ? row+3 : 5
   for(var x=xn;x<xx;x++){
     tie = tie && !!board[x][5];
     for(var y=yn;y<yx;y++){
